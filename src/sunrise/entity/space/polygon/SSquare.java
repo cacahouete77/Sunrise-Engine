@@ -3,7 +3,7 @@ package sunrise.entity.space.polygon;
 import sunrise.entity.base.SVector;
 import sunrise.entity.space.SShape;
 
-public abstract class SSquare extends SShape implements Polygon {
+public abstract class SSquare extends SPolygon {
     private static final double QUARTER_ANGLE = Math.PI / 2;
     private SVector size;
 
@@ -35,10 +35,16 @@ public abstract class SSquare extends SShape implements Polygon {
 
         double cangle = angle + 2 * (QUARTER_ANGLE - angle);
 
+        angle += this.getAngle();
+        cangle += this.getAngle();
+
         vertex[0] = new SVector(Math.cos(angle) * length, Math.sin(angle) * length);
         vertex[1] = new SVector(Math.cos(cangle) * length, Math.sin(cangle) * length);
         vertex[2] = new SVector(Math.cos(angle + Math.PI) * length, Math.sin(angle + Math.PI) * length);
         vertex[3] = new SVector(Math.cos(cangle + Math.PI) * length, Math.sin(cangle + Math.PI) * length);
+
+        for(SVector vector : vertex)
+            vector.add(this.getPosition());
 
         return vertex;
     }

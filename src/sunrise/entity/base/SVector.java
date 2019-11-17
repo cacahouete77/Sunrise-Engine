@@ -52,6 +52,20 @@ public class SVector {
         return Math.atan(y / x);
     }
 
+    public static SVector add(SVector v1, SVector v2) {
+        SVector v = new SVector(v1);
+        v.add(v2);
+
+        return v;
+    }
+
+    public static SVector subtract(SVector v1, SVector v2) {
+        SVector v = new SVector(v1);
+        v.subtract(v2);
+
+        return v;
+    }
+
     public static double dot(SVector v1, SVector v2) {
         return v1.x * v2.x + v1.y * v2.y;
     }
