@@ -24,18 +24,22 @@ public class CollisionDetector {
         SVector[] axis = new SVector[p1.length];
 
         for(int i = 0; i < p1.length - 1; i++) {
-            axis[i] = p1[i];
+            axis[i] = new SVector(p1[i]);
             axis[i].subtract(p1[i + 1]);
-            axis[i].setY(-axis[i].getY());
+
+            double newX = -axis[i].getY();
+            double newY = axis[i].getX();
+            axis[i].setX(newX);
+            axis[i].setY(newY);
         }
 
-        axis[axis.length - 1] = p1[axis.length - 1];
+        axis[axis.length - 1] = new SVector(p1[axis.length - 1]);
         axis[axis.length - 1].subtract(p1[0]);
-        axis[axis.length - 1].setY(-axis[axis.length - 1].getY());
 
-        //Essai un des points les plus
-        //SVector[][] axisExtremes1 = new SVector[axis.length][2];
-        //SVector[][] axisExtremes2 = new SVector[axis.length][2];
+        double newX = -axis[axis.length - 1].getY();
+        double newY = axis[axis.length - 1].getX();
+        axis[axis.length - 1].setX(newX);
+        axis[axis.length - 1].setY(newY);
 
         for(int i = 0; i < axis.length; i++) {
             double highest1 = SVector.dot(axis[i], p1[0]);
@@ -79,6 +83,7 @@ public class CollisionDetector {
 
             SVector projection1 = SVector.project(SVector.subtract(highestPoint1, lowestPoint1), axis[i]);
             SVector projection2 = SVector.project(SVector.subtract(highestPoint2, lowestPoint2), axis[i]);
+
             double projectionLength1 = projection1.normal();
             double projectionLength2 = projection2.normal();
 
@@ -93,8 +98,6 @@ public class CollisionDetector {
             longestProjection = Math.max(SVector.project(lowHigh, axis[i]).normal(), longestProjection);
             longestProjection = Math.max(SVector.project(highLow, axis[i]).normal(), longestProjection);
             longestProjection = Math.max(SVector.project(highHigh, axis[i]).normal(), longestProjection);
-
-            System.out.println(i + " - " + longestProjection + " - " + projectionLength1 + " - " + projectionLength2);
 
             if(longestProjection > projectionLength1 + projectionLength2)
                 return false;

@@ -18,7 +18,7 @@ public class STest {
             }
         };
 
-        SSquare square2 = new SSquare(new SVector(2, 2), new SVector(1, 1), 0.3) {
+        SSquare square2 = new SSquare(new SVector(2, 2), new SVector(1, 1), 0) {
             @Override
             public void start() {
 
@@ -31,12 +31,12 @@ public class STest {
         };
 
         SVector[] vertex = square1.getVertex();
-        for(SVector vector : vertex)
-            System.out.println(vector);
+        //for(SVector vector : vertex)
+        //   System.out.println(vector);
 
         vertex = square2.getVertex();
         for(SVector vector : vertex)
-            System.out.println(vector);
+        System.out.println(vector);
 
         CollisionDetector cd = new CollisionDetector();
 
