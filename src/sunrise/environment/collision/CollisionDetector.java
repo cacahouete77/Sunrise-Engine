@@ -1,13 +1,19 @@
 package sunrise.environment.collision;
 
-import sunrise.entity.base.SVector;
+import sunrise.entity.space.SVector;
 import sunrise.entity.space.SShape;
+import sunrise.entity.space.polygon.SAABB;
 import sunrise.entity.space.polygon.SPolygon;
-import sunrise.entity.space.polygon.SSquare;
 
 public class CollisionDetector {
 
     public boolean detectCollision(SShape s1, SShape s2) throws UnimplementedCollisionException {
+        if(s1 instanceof SAABB && s2 instanceof SAABB)
+            return detectCollision((SAABB) s1, (SAABB) s2);
+
+        if(s1 instanceof SPolygon && s2 instanceof SPolygon)
+            return detectCollision((SPolygon) s1, (SPolygon) s2);
+
         throw new UnimplementedCollisionException();
     }
 
@@ -103,6 +109,13 @@ public class CollisionDetector {
                 return false;
         }
 
-        return true; //TODO
+        return true;
+    }
+
+    public boolean detectCollision(SAABB s1, SAABB s2) {
+        return s1.getPosition().getX() < s2.getPosition().getX() + s2.getDimensions().getX() &&
+                s1.getPosition().getX() + s1.getDimensions().getX() > s2.getPosition().getX() &&
+                s1.getPosition().getY() < s2.getPosition().getY() + s2.getDimensions().getY() &&
+                s1.getPosition().getY() + s1.getDimensions().getY() > s2.getPosition().getY();
     }
 }

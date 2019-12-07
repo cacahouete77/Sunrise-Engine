@@ -1,6 +1,6 @@
 package sunrise.entity.space.polygon;
 
-import sunrise.entity.base.SVector;
+import sunrise.entity.space.SVector;
 import sunrise.entity.space.SShape;
 
 public abstract class SPolygon extends SShape {

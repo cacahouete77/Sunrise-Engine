@@ -1,7 +1,6 @@
 package sunrise.entity.space;
 
 import sunrise.entity.SEntity;
-import sunrise.entity.base.SVector;
 
 public abstract class SShape extends SEntity {
     private SVector position;

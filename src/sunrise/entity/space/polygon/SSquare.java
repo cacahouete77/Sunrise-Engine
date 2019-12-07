@@ -1,7 +1,6 @@
 package sunrise.entity.space.polygon;
 
-import sunrise.entity.base.SVector;
-import sunrise.entity.space.SShape;
+import sunrise.entity.space.SVector;
 
 public abstract class SSquare extends SPolygon {
     private static final double QUARTER_ANGLE = Math.PI / 2;

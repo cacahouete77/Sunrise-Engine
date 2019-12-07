@@ -1,6 +1,7 @@
 package sunrise.entity.base;
 
-public interface Updateable {
+public interface SUpdateable {
     void start();
     void update(long time);
+    void end();
 }

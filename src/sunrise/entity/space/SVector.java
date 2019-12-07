@@ -1,4 +1,4 @@
-package sunrise.entity.base;
+package sunrise.entity.space;
 
 public class SVector {
     private double x, y;
