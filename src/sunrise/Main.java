@@ -30,7 +30,7 @@ public class Main extends Application {
         Affine affine = gc.getTransform();
         gc.setTransform(affine);
 
-        primaryStage.setTitle("Hopeless Bastards");
+        primaryStage.setTitle("In progress");
         primaryStage.setScene(scene);
         primaryStage.show();
     }

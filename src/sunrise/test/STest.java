@@ -45,7 +45,7 @@ public class STest extends SApplication {
         Affine affine = gc.getTransform();
         gc.setTransform(affine);
 
-        primaryStage.setTitle("Hopeless Bastards");
+        primaryStage.setTitle("In progress");
         primaryStage.setScene(scene);
         primaryStage.show();
         primaryStage.setMinHeight(400);
