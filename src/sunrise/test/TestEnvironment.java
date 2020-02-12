@@ -9,7 +9,7 @@ import sunrise.environment.SEnvironment;
 
 public class TestEnvironment extends SEnvironment {
 
-    public TestEnvironment(int width, int height, String graphicsPath) {
+    public TestEnvironment(double width, double height, String graphicsPath) {
         super(width, height, graphicsPath);
     }
 

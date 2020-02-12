@@ -3,16 +3,13 @@ package sunrise.environment;
 import sunrise.entity.SEntity;
 import sunrise.entity.base.SUpdateable;
 import sunrise.entity.graphics.AABBDrawable;
-import sunrise.entity.graphics.CircleDrawable;
 import sunrise.entity.graphics.SDrawable;
-import sunrise.entity.graphics.SquareDrawable;
-import sunrise.entity.space.SShape;
 import sunrise.entity.space.SVector;
 import sunrise.entity.space.polygon.SAABB;
-import sunrise.entity.space.polygon.SSquare;
 import sunrise.environment.collision.CollisionDetector;
 import sunrise.environment.collision.UnimplementedCollisionException;
 import sunrise.environment.graphics.GraphicsManager;
+import sunrise.environment.graphics.UnimplementedDrawingException;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -33,8 +30,8 @@ public abstract class SEnvironment implements SUpdateable {
     protected ArrayList<SDrawable> drawables;
     protected ArrayList<SUpdateable> updateables;
 
-    public SEnvironment(int width, int height, String graphicsPath) {
-        bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    public SEnvironment(double width, double height, String graphicsPath) {
+        bufferedImage = new BufferedImage((int) width, (int) height, BufferedImage.TYPE_INT_ARGB);
         g2d = (Graphics2D) bufferedImage.getGraphics();
         gm = new GraphicsManager(graphicsPath);
     }
@@ -57,97 +54,69 @@ public abstract class SEnvironment implements SUpdateable {
 
     //Graphics functions
     public BufferedImage draw() {
-        synchronized(graphicsLock) {
-            g2d.setColor(Color.LIGHT_GRAY);
-            g2d.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
 
-            for (SDrawable d : drawables) {
+        g2d.setColor(Color.LIGHT_GRAY);
+        g2d.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
 
-                try {
-                    if (!cd.detectCollision(camera, d.getDrawBox())) {
-                        continue;
-                    }
-                } catch (UnimplementedCollisionException uce) {
+        for (SDrawable d : drawables) {
+
+            try {
+                if (!cd.detectCollision(camera, d.getDrawBox())) {
                     continue;
                 }
+            } catch (UnimplementedCollisionException uce) {
+                continue;
+            }
 
-                if (d instanceof SquareDrawable) {
-                    //TODO Drawing Squares incorrectly (no custom images)
+            if (d instanceof AABBDrawable) {
+                //Drawing AABB correctly
+                SAABB drawBox = ((SAABB) d.getDrawBox());
+                BufferedImage texture = gm.getTexture(d.getTexture());
 
-                    SVector[] points = ((SSquare) d.getDrawBox()).getVertex();
+                SVector position = new SVector(drawBox.getPosition());
+                SVector dimensions = new SVector(drawBox.getDimensions());
 
-                    for (int i = 0; i < points.length - 1; i++) {
-                        if (i % 2 == 1)
-                            g2d.setColor(Color.PINK);
-                        else
-                            g2d.setColor(Color.BLACK);
+                position.subtract(camera.getPosition());
+                position.setX(position.getX() / camera.getDimensions().getX() * bufferedImage.getWidth());
+                position.setY(position.getY() / camera.getDimensions().getY() * bufferedImage.getHeight());
+                dimensions.setX(dimensions.getX() / camera.getDimensions().getX() * bufferedImage.getWidth());
+                dimensions.setY(dimensions.getY() / camera.getDimensions().getY() * bufferedImage.getHeight());
 
-                        g2d.drawLine((int) points[i].getX(),
-                                (int) points[i].getY(),
-                                (int) points[i + 1].getX(),
-                                (int) points[i + 1].getY());
-                    }
+                if (texture == null) {
+
+                    //If texture not found, draw black and pink squares
+                    g2d.setColor(Color.BLACK);
+
+                    g2d.fillRect((int) position.getX(),
+                            (int) position.getY(),
+                            (int) dimensions.getX(),
+                            (int) dimensions.getY());
 
                     g2d.setColor(Color.PINK);
 
-                    g2d.drawLine((int) points[points.length - 1].getX(),
-                            (int) points[points.length - 1].getY(),
-                            (int) points[0].getX(),
-                            (int) points[0].getY());
+                    dimensions.multiply(0.5);
 
-                } else if (d instanceof CircleDrawable) {
-                    //TODO not drawing Circles
+                    g2d.fillRect((int) position.getX(),
+                            (int) position.getY(),
+                            (int) dimensions.getX(),
+                            (int) dimensions.getY());
 
-                } else if (d instanceof AABBDrawable) {
-                    //Drawing AABB correctly
-                    SAABB drawBox = ((SAABB) d.getDrawBox());
-                    BufferedImage texture = gm.getTexture(d.getTexture());
+                    position.add(dimensions);
 
-                    SVector position = new SVector(drawBox.getPosition());
-                    SVector dimensions = new SVector(drawBox.getDimensions());
+                    g2d.fillRect((int) position.getX(),
+                            (int) position.getY(),
+                            (int) Math.ceil(dimensions.getX()),
+                            (int) dimensions.getY());
 
-                    position.subtract(camera.getPosition());
-                    position.setX(position.getX() / camera.getDimensions().getX() * bufferedImage.getWidth());
-                    position.setY(position.getY() / camera.getDimensions().getY() * bufferedImage.getHeight());
-                    dimensions.setX(dimensions.getX() / camera.getDimensions().getX() * bufferedImage.getWidth());
-                    dimensions.setY(dimensions.getY() / camera.getDimensions().getY() * bufferedImage.getHeight());
+                } else {
 
-                    if (texture == null) {
-
-                        //If texture not found, draw black and pink squares
-                        g2d.setColor(Color.BLACK);
-
-                        g2d.fillRect((int) position.getX(),
-                                (int) position.getY(),
-                                (int) dimensions.getX(),
-                                (int) dimensions.getY());
-
-                        g2d.setColor(Color.PINK);
-
-                        dimensions.multiply(0.5);
-
-                        g2d.fillRect((int) position.getX(),
-                                (int) position.getY(),
-                                (int) dimensions.getX(),
-                                (int) dimensions.getY());
-
-                        position.add(dimensions);
-
-                        g2d.fillRect((int) position.getX(),
-                                (int) position.getY(),
-                                (int) dimensions.getX(),
-                                (int) dimensions.getY());
-
-                    } else {
-
-                        //If texture found, draw it
-                        g2d.drawImage(texture,
-                                (int) position.getX(),
-                                (int) position.getY(),
-                                (int) dimensions.getX(),
-                                (int) dimensions.getY(),
-                                null);
-                    }
+                    //If texture found, draw it
+                    g2d.drawImage(texture,
+                            (int) position.getX(),
+                            (int) position.getY(),
+                            (int) dimensions.getX(),
+                            (int) dimensions.getY(),
+                            null);
                 }
             }
         }
@@ -155,14 +124,10 @@ public abstract class SEnvironment implements SUpdateable {
         return bufferedImage;
     }
 
-    public void setDimensions(int width, int height) {
+    public void setDimensions(double width, double height) {
         synchronized(graphicsLock) {
             double actualRatio = (0.0 + width) / height;
             double wantedRatio = (camera.getDimensions().getX()) / (camera.getDimensions().getY());
-
-            //System.out.println("---");
-            //System.out.println(actualRatio);
-            //System.out.println(wantedRatio);
 
             if(wantedRatio > actualRatio) {
                 height = (int) (width / wantedRatio);
@@ -170,8 +135,7 @@ public abstract class SEnvironment implements SUpdateable {
                 width = (int) (wantedRatio * height);
             }
 
-
-            bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            bufferedImage = new BufferedImage((int) width, (int) height, BufferedImage.TYPE_INT_ARGB);
             g2d = (Graphics2D) bufferedImage.getGraphics();
         }
     }

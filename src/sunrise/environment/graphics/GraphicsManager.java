@@ -7,7 +7,7 @@ public class GraphicsManager {
     private HashMap<String, BufferedImage> images = new HashMap<>();
 
     public GraphicsManager(String graphicsPath) {
-
+        //TODO initialize images with graphicsPath
     }
 
     public BufferedImage getTexture(String texture) {

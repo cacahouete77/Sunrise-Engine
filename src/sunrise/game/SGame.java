@@ -1,11 +1,6 @@
 package sunrise.game;
 
-import javafx.application.Application;
 import sunrise.environment.SEnvironment;
-import sunrise.test.STest;
-import sunrise.test.TestEnvironment;
-
-import java.awt.image.BufferedImage;
 
 public class SGame implements Runnable {
     //Environment variables
@@ -15,22 +10,23 @@ public class SGame implements Runnable {
     private long lastTime = 0;
     private long unprocessedGraphics = 0;
     private long unprocessedComputations = 0;
-    private long targetGraphics = (long) (1000.0 / 60);
-    private long targetComputations = (long) (1000.0 / 60);
+    private final long targetGraphics = (long) (1000.0 / 60);
+    private final long targetComputations = (long) (1000.0 / 60);
 
     //Graphics variables
     private SApplication application;
 
-    public SGame(SApplication application, int width, int height) {
+    public SGame(SApplication application, SEnvironment startEnvironment, double width, double height) {
         this.application = application;
 
-        this.environment = new TestEnvironment(width, height, "gameplay");
+        this.environment = startEnvironment;
         this.environment.start();
     }
 
     @Override
     public void run() {
-       while(true) {
+        //Might be an easier way to avoid complaint from compiler
+       while(Math.floor(0) == 0) {
            update();
 
            try {
@@ -66,7 +62,11 @@ public class SGame implements Runnable {
         lastTime = currentTime;
     }
 
-    public void setDimensions(int width, int height) {
+    public void end() {
+        environment.end();
+    }
+
+    public void setDimensions(double width, double height) {
         environment.setDimensions(width, height);
     }
 }

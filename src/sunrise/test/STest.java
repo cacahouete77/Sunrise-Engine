@@ -1,21 +1,17 @@
 package sunrise.test;
 
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import sunrise.environment.graphics.GraphicsManager;
 import sunrise.game.SApplication;
 import sunrise.game.SGame;
 
@@ -25,7 +21,7 @@ import java.awt.image.BufferedImage;
 public class STest extends SApplication {
     private static boolean setDimensions = true;
 
-    private static int width = 400, height = 400;
+    private static double width = 400, height = 400;
 
     private static SGame game;
 
@@ -37,8 +33,8 @@ public class STest extends SApplication {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
-
+    public void start(Stage primaryStage) {
+        //Please ignore how messy the code in this function is xd
         VBox root = new VBox();
         Scene scene = new Scene(root, width, height);
 
@@ -52,27 +48,28 @@ public class STest extends SApplication {
         primaryStage.setTitle("Hopeless Bastards");
         primaryStage.setScene(scene);
         primaryStage.show();
+        primaryStage.setMinHeight(400);
+        primaryStage.setMinWidth(400);
 
-        game = new SGame(this, width, height);
+        canvas.widthProperty().bind(scene.widthProperty());
+        canvas.heightProperty().bind(scene.heightProperty());
 
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent t) {
-                Platform.exit();
-                System.exit(0);
-            }
+        game = new SGame(this,
+                new TestEnvironment(width, height, "gameplay"),
+                width,
+                height);
+
+        primaryStage.setOnCloseRequest(t -> {
+            game.end();
+            Platform.exit();
+            System.exit(0);
         });
 
-
         primaryStage.widthProperty().addListener((obs, oldVal, newVal) -> {
-            width = newVal.intValue();
-            canvas.setWidth(width);
             setDimensions = true;
         });
 
         primaryStage.heightProperty().addListener((obs, oldVal, newVal) -> {
-            height = newVal.intValue();
-            canvas.setHeight(height);
             setDimensions = true;
         });
 
@@ -81,18 +78,22 @@ public class STest extends SApplication {
 
     public void draw(BufferedImage bufferedImage) {
         if(setDimensions) {
+            width = canvas.getWidth();
+            height = canvas.getHeight();
+
             game.setDimensions(width, height);
+            gc = canvas.getGraphicsContext2D();
             setDimensions = false;
         }
 
-        Image i = SwingFXUtils.toFXImage(bufferedImage, null);
+        Image img = SwingFXUtils.toFXImage(bufferedImage, null);
 
-        int widthDifference = (int) (width - i.getWidth());
-        int heightDifference = (int) (height - i.getHeight());
+        int widthDifference = (int) (canvas.getWidth() - img.getWidth());
+        int heightDifference = (int) (canvas.getHeight() - img.getHeight());
 
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, width, height);
 
-        gc.drawImage(i, widthDifference / 2.0, heightDifference / 2.0, i.getWidth(), i.getHeight());
+        gc.drawImage(img, widthDifference / 2.0, heightDifference / 2.0, img.getWidth(), img.getHeight());
     }
 }
