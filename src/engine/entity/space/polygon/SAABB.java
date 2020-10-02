@@ -2,10 +2,10 @@ package engine.entity.space.polygon;
 
 import engine.entity.space.SVector;
 
-public abstract class SAABB extends SPolygon {
+public class SAABB extends SPolygon {
     private SVector dimensions;
 
-    protected SAABB(SVector position, SVector dimensions) {
+    public SAABB(SVector position, SVector dimensions) {
         super(position, 0);
 
         this.dimensions = new SVector(dimensions);

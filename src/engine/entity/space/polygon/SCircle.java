@@ -3,10 +3,10 @@ package engine.entity.space.polygon;
 import engine.entity.space.SShape;
 import engine.entity.space.SVector;
 
-public abstract class SCircle extends SShape {
+public class SCircle extends SShape {
     private double radius;
 
-    protected SCircle(SVector position, double angle, double radius) {
+    public SCircle(SVector position, double angle, double radius) {
         super(position, angle);
 
         this.radius = radius;

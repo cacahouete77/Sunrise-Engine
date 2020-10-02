@@ -1,5 +1,6 @@
 package engine.environment;
 
+import engine.SGame;
 import engine.entity.SEntity;
 import engine.entity.base.SUpdateable;
 import engine.entity.graphics.AABBDrawable;
@@ -9,12 +10,16 @@ import engine.entity.space.polygon.SAABB;
 import engine.environment.collision.CollisionDetector;
 import engine.environment.collision.UnimplementedCollisionException;
 import engine.environment.graphics.GraphicsManager;
+import engine.environment.graphics.UnimplementedDrawingException;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-public abstract class SEnvironment implements SUpdateable {
+public abstract class SEnvironment extends SAABB implements SUpdateable {
+    //Upper class
+    private SGame game;
+
     //Graphics
     private GraphicsManager gm;
     private Graphics2D g2d;
@@ -25,11 +30,13 @@ public abstract class SEnvironment implements SUpdateable {
     private CollisionDetector cd = new CollisionDetector();
 
     //Entities
-    protected SAABB camera;
-    protected ArrayList<SDrawable> drawables;
-    protected ArrayList<SUpdateable> updateables;
+    private ArrayList<SEnvironment> environments;
+    private ArrayList<SDrawable> drawables;
+    private ArrayList<SUpdateable> updateables;
 
     public SEnvironment(double width, double height, String graphicsPath) {
+        super(new SVector(0, 0), new SVector(20, 10));
+
         bufferedImage = new BufferedImage((int) width, (int) height, BufferedImage.TYPE_INT_ARGB);
         g2d = (Graphics2D) bufferedImage.getGraphics();
         gm = new GraphicsManager(graphicsPath);
@@ -37,8 +44,12 @@ public abstract class SEnvironment implements SUpdateable {
 
     //Updateable functions
     public void start() {
+        environments = new ArrayList<>();
         drawables = new ArrayList<>();
-        updateables = new ArrayList<SUpdateable>();
+        updateables = new ArrayList<>();
+
+        for(SUpdateable u : updateables)
+            u.start();
     }
 
     public void update(long time) {
@@ -47,9 +58,20 @@ public abstract class SEnvironment implements SUpdateable {
     }
 
     public void end() {
-
+        for(SUpdateable u : updateables)
+            u.end();
     }
     //END Updateable
+
+    //Upper class functions
+    public void setGame(SGame game) {
+        this.game = game;
+    }
+
+    public void requestEnvironment(SEnvironment se) {
+        game.requestEnvironment(se);
+    }
+    //END Upper class
 
     //Graphics functions
     public BufferedImage draw() {
@@ -60,7 +82,7 @@ public abstract class SEnvironment implements SUpdateable {
         for (SDrawable d : drawables) {
 
             try {
-                if (!cd.detectCollision(camera, d.getDrawBox())) {
+                if (!cd.detectCollision(this, d.getDrawBox())) {
                     continue;
                 }
             } catch (UnimplementedCollisionException uce) {
@@ -70,16 +92,16 @@ public abstract class SEnvironment implements SUpdateable {
             if (d instanceof AABBDrawable) {
                 //Drawing AABB correctly
                 SAABB drawBox = ((SAABB) d.getDrawBox());
-                BufferedImage texture = gm.getTexture(d.getTexture());
+                BufferedImage texture = d.getTexture();
 
                 SVector position = new SVector(drawBox.getPosition());
                 SVector dimensions = new SVector(drawBox.getDimensions());
 
-                position.subtract(camera.getPosition());
-                position.setX(position.getX() / camera.getDimensions().getX() * bufferedImage.getWidth());
-                position.setY(position.getY() / camera.getDimensions().getY() * bufferedImage.getHeight());
-                dimensions.setX(dimensions.getX() / camera.getDimensions().getX() * bufferedImage.getWidth());
-                dimensions.setY(dimensions.getY() / camera.getDimensions().getY() * bufferedImage.getHeight());
+                position.subtract(this.getPosition());
+                position.setX(position.getX() / this.getDimensions().getX() * bufferedImage.getWidth());
+                position.setY(position.getY() / this.getDimensions().getY() * bufferedImage.getHeight());
+                dimensions.setX(dimensions.getX() / this.getDimensions().getX() * bufferedImage.getWidth());
+                dimensions.setY(dimensions.getY() / this.getDimensions().getY() * bufferedImage.getHeight());
 
                 if (texture == null) {
 
@@ -105,7 +127,7 @@ public abstract class SEnvironment implements SUpdateable {
                     g2d.fillRect((int) position.getX(),
                             (int) position.getY(),
                             (int) Math.ceil(dimensions.getX()),
-                            (int) dimensions.getY());
+                            (int) Math.ceil(dimensions.getY()));
 
                 } else {
 
@@ -117,6 +139,12 @@ public abstract class SEnvironment implements SUpdateable {
                             (int) dimensions.getY(),
                             null);
                 }
+            } else {
+                try {
+                    throw new UnimplementedDrawingException("This shape cannot be drawn");
+                } catch(Exception ignored) {
+
+                }
             }
         }
 
@@ -126,7 +154,7 @@ public abstract class SEnvironment implements SUpdateable {
     public void setDimensions(double width, double height) {
         synchronized(graphicsLock) {
             double actualRatio = (0.0 + width) / height;
-            double wantedRatio = (camera.getDimensions().getX()) / (camera.getDimensions().getY());
+            double wantedRatio = (this.getDimensions().getX()) / (this.getDimensions().getY());
 
             if(wantedRatio > actualRatio) {
                 height = (int) (width / wantedRatio);
@@ -142,6 +170,10 @@ public abstract class SEnvironment implements SUpdateable {
 
     //Entities functions
     public void addEntity(SEntity entity) {
+
+        if(entity instanceof SEnvironment)
+            environments.add((SEnvironment) entity);
+
         if(entity instanceof SDrawable)
             drawables.add((SDrawable) entity);
 
@@ -149,4 +181,8 @@ public abstract class SEnvironment implements SUpdateable {
             updateables.add((SUpdateable) entity);
     }
     //END Entities
+
+    //Controller functions
+
+    //END Controller
 }

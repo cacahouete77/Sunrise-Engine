@@ -2,11 +2,11 @@ package engine.entity.space.polygon;
 
 import engine.entity.space.SVector;
 
-public abstract class SSquare extends SPolygon {
+public class SSquare extends SPolygon {
     private static final double QUARTER_ANGLE = Math.PI / 2;
     private SVector size;
 
-    protected SSquare(SVector position, SVector size, double angle) {
+    public SSquare(SVector position, SVector size, double angle) {
         super(position, angle);
 
         this.size = new SVector(size);

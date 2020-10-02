@@ -1,8 +1,10 @@
 package engine.entity.space;
 
 import engine.entity.SEntity;
+import engine.environment.SEnvironment;
 
 public abstract class SShape extends SEntity {
+    private boolean relative = false;
     private SVector position;
     private double angle;
 
@@ -12,7 +14,9 @@ public abstract class SShape extends SEntity {
     }
 
     public SVector getPosition() {
-        return position;
+        SEnvironment se = getParentEnvironment();
+        
+        return se != null && relative ? SVector.add(position, se.getPosition()) : position;
     }
 
     public void setPosition(SVector position) {
@@ -33,5 +37,13 @@ public abstract class SShape extends SEntity {
 
     public void rotate(double rotation) {
         this.angle += rotation;
+    }
+
+    public boolean getRelative() {
+        return relative;
+    }
+
+    public void setRelative(boolean relative) {
+        this.relative = relative;
     }
 }

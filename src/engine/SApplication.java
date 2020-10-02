@@ -1,4 +1,4 @@
-package game;
+package engine;
 
 import javafx.application.Application;
 

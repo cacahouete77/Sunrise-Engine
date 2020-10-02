@@ -1,4 +1,4 @@
-package game;
+package engine;
 
 import engine.environment.SEnvironment;
 
@@ -10,17 +10,16 @@ public class SGame implements Runnable {
     private long lastTime = 0;
     private long unprocessedGraphics = 0;
     private long unprocessedComputations = 0;
-    private final long targetGraphics = (long) (1000.0 / 60);
-    private final long targetComputations = (long) (1000.0 / 60);
+    public final long targetGraphics = (long) (1000.0 / 60);
+    public final long targetComputations = (long) (1000.0 / 60);
 
     //Graphics variables
-    private SApplication application;
+    private final SApplication application;
 
     public SGame(SApplication application, SEnvironment startEnvironment, double width, double height) {
         this.application = application;
 
-        this.environment = startEnvironment;
-        this.environment.start();
+        requestEnvironment(startEnvironment);
     }
 
     @Override
@@ -69,4 +68,13 @@ public class SGame implements Runnable {
     public void setDimensions(double width, double height) {
         environment.setDimensions(width, height);
     }
+
+    public void requestEnvironment(SEnvironment se) {
+        this.environment = se;
+        this.environment.start();
+        this.environment.setGame(this);
+    }
+
+    //Controller functions
+
 }

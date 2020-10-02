@@ -2,8 +2,10 @@ package engine.entity.graphics;
 
 import engine.entity.space.polygon.SAABB;
 
+import java.awt.image.BufferedImage;
+
 public interface AABBDrawable extends SDrawable {
 
-    String getTexture();
+    BufferedImage getTexture();
     SAABB getDrawBox();
 }

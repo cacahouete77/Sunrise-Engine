@@ -1,5 +1,6 @@
-package engine.test;
+package game;
 
+import game.environments.InitialEnvironment;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
@@ -10,12 +11,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
-import game.SApplication;
-import game.SGame;
+import engine.SApplication;
+import engine.SGame;
 
 import java.awt.image.BufferedImage;
 
-public class STest extends SApplication {
+public class SMain extends SApplication {
     private static boolean setDimensions = true;
 
     private static double width = 400, height = 400;
@@ -52,7 +53,7 @@ public class STest extends SApplication {
         canvas.heightProperty().bind(scene.heightProperty());
 
         game = new SGame(this,
-                new TestEnvironment(width, height, "gameplay"),
+                new InitialEnvironment(width, height, "gameplay"),
                 width,
                 height);
 
