@@ -1,6 +1,7 @@
 package engine;
 
 import engine.environment.SEnvironment;
+import javafx.scene.input.MouseEvent;
 
 public class SGame implements Runnable {
     //Environment variables
@@ -76,5 +77,11 @@ public class SGame implements Runnable {
     }
 
     //Controller functions
+    public void mousePressed(MouseEvent me) {
+        environment.mousePressed(me);
+    }
 
+    public void mouseMoved(MouseEvent me) {
+        environment.mousePressed(me);
+    }
 }

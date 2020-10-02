@@ -7,7 +7,7 @@ public abstract class SEntity {
     private static volatile long CURRENT_ID;
     public final long id;
 
-    protected SEnvironment parentEnvironment;
+    private SEnvironment parentEnvironment;
 
     protected SEntity() {
         synchronized(ID_LOCK) {

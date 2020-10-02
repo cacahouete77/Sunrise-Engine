@@ -3,10 +3,13 @@ package game;
 import game.environments.InitialEnvironment;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.EventHandler;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
@@ -35,6 +38,7 @@ public class SMain extends SApplication {
         //Please ignore how messy the code in this function is xd
         VBox root = new VBox();
         Scene scene = new Scene(root, width, height);
+        scene.setCursor(Cursor.NONE);
 
         canvas = new Canvas(width, height);
         root.getChildren().add(canvas);
@@ -57,6 +61,7 @@ public class SMain extends SApplication {
                 width,
                 height);
 
+        //Window listeners
         primaryStage.setOnCloseRequest(t -> {
             game.end();
             Platform.exit();
@@ -70,6 +75,17 @@ public class SMain extends SApplication {
         primaryStage.heightProperty().addListener((obs, oldVal, newVal) -> {
             setDimensions = true;
         });
+
+        //Mouse listeners
+        scene.setOnMousePressed(mouseEvent -> {
+            game.mousePressed(mouseEvent);
+        });
+
+        scene.setOnMouseMoved(mouseEvent -> {
+            game.mouseMoved(mouseEvent);
+        });
+
+        //Keyboard listeners
 
         new Thread(game).start();
     }
